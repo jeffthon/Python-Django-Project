@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .cart-card {
+        border-radius: 15px;
+        border: 1px solid #eee;
+        transition: 0.3s;
+    }
+    .cart-img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+    .quantity-control {
+        display: flex;
+        align-items: center;
+        background: #f8f9fa;
+        border-radius: 20px;
+        padding: 5px 15px;
+        width: fit-content;
+    }
+    .checkout-box {
+        background: #fdfdfd;
+        border: 2px solid #e8f5e9;
+        border-radius: 20px;
+        position: sticky;
+        top: 20px;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold m-0">Your Basket 🧺</h2>
+                <span class="badge bg-success rounded-pill">{{ cart_items|length }} Items</span>
+            </div>
+
+            {% if cart_items %}
+                {% for item in cart_items %}
+                <div class="card cart-card mb-3 p-3 shadow-sm">
+                    <div class="row align-items-center">
+                        <div class="col-3 col-md-2 text-center">
+                            {% if item.product.image %}
+                                <img src="{{ item.product.image.url }}" class="cart-img" alt="{{ item.product.name }}">
+                            {% else %}
+                                <img src="https://via.placeholder.com/80" class="cart-img">
+                            {% endif %}
+                        </div>
+                        <div class="col-9 col-md-4">
+                            <h5 class="mb-1 fw-bold">{{ item.product.name }}</h5>
+                            <p class="text-muted small mb-0">₹{{ item.product.price }} per kg</p>
+                        </div>
+                        <div class="col-6 col-md-3 mt-3 mt-md-0">
+                            <div class="quantity-control">
+                                <a href="#" class="text-decoration-none text-dark fw-bold">-</a>
+                                <span class="mx-3 fw-bold">{{ item.quantity }}</span>
+                                <a href="{% url 'add_to_cart' item.product.id %}" class="text-decoration-none text-success fw-bold">+</a>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 text-end">
+                            <h5 class="fw-bold text-success mb-0">₹{{ item.total_price }}</h5>
+                            <a href="#" class="text-danger small text-decoration-none mt-1 d-block">Remove</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center py-5">
+                    <img src="https://cdn-icons-png.flaticon.com/512/11329/11329061.png" style="width: 150px; opacity: 0.5;">
+                    <h4 class="text-muted mt-3">Your basket is empty!</h4>
+                    <a href="{% url 'product_list' %}" class="btn btn-success mt-3 rounded-pill px-4">Shop Fresh Produce</a>
+                </div>
+            {% endif %}
+        </div>
+
+        {% if cart_items %}
+        <div class="col-lg-4">
+            <div class="card checkout-box p-4 shadow-sm">
+                <h4 class="fw-bold mb-4">Summary</h4>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Subtotal</span>
+                    <span class="fw-bold">₹{{ grand_total }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Delivery</span>
+                    <span class="text-success">FREE</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between mb-4">
+                    <span class="h5 fw-bold">Grand Total</span>
+                    <span class="h5 fw-bold text-success">₹{{ grand_total }}</span>
+                </div>
+                
+                <button class="btn btn-success w-100 py-3 rounded-pill fw-bold shadow">
+                    Place Order Now
+                </button>
+                
+                <p class="text-center text-muted small mt-3">
+                    <i class="bi bi-shield-check"></i> Secure payment processed by PureBasket
+                </p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

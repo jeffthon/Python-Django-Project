@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row g-5">
+        <div class="col-md-7 col-lg-8">
+            <h4 class="mb-3 fw-bold text-success">Shipping Address</h4>
+            <div class="card shadow-sm border-0 rounded-4 p-4">
+                <form method="POST" action="{% url 'checkout' %}">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="address" class="form-label fw-semibold">Complete Address</label>
+                            <textarea class="form-control rounded-3" id="address" name="address" rows="3" placeholder="Street name, Apartment, City, Pincode" required></textarea>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="phone" class="form-label fw-semibold">Phone Number</label>
+                            <input type="text" class="form-control rounded-pill" id="phone" name="phone" placeholder="+91 XXXX XXX XXX" required>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <button class="w-100 btn btn-success btn-lg rounded-pill fw-bold shadow-sm" type="submit">
+                        Proceed to Payment
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-5 col-lg-4">
+            <h4 class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted fw-bold">Your Cart</span>
+                <span class="badge bg-success rounded-pill">{{ cart_items.count }}</span>
+            </h4>
+            <ul class="list-group mb-3 shadow-sm border-0 rounded-4 overflow-hidden">
+                {% for item in cart_items %}
+                <li class="list-group-item d-flex justify-content-between lh-sm py-3">
+                    <div>
+                        <h6 class="my-0 fw-bold">{{ item.product.name }}</h6>
+                        <small class="text-muted">{{ item.quantity }} x ₹{{ item.product.price }}</small>
+                    </div>
+                    <span class="text-muted">₹{{ item.get_total_item_price }}</span>
+                </li>
+                {% endfor %}
+                
+                <li class="list-group-item d-flex justify-content-between bg-light py-3">
+                    <span class="fw-bold">Total (INR)</span>
+                    <strong class="text-success fs-5">₹{{ total }}</strong>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

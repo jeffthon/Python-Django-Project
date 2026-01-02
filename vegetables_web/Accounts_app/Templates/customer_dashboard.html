@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* ... (Keep your marketplace styles) ... */
+
+    /* Customer Profile Summary Card */
+    .profile-card {
+        background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+        color: white;
+        padding: 25px;
+        border-radius: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 20px rgba(46, 125, 50, 0.15);
+    }
+
+    /* History Table Styling */
+    .order-table-card {
+        background: white;
+        border-radius: 20px;
+        padding: 20px;
+        border: 1px solid #eee;
+    }
+
+    .status-pill {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+    .status-delivered { background: #e8f5e9; color: #2e7d32; }
+    .status-pending { background: #fff3e0; color: #ef6c00; }
+    /* Sidebar Navigation Container */
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 10px;
+}
+
+/* Base Link Styling */
+.category-link {
+    display: flex;
+    align-items: center;
+    padding: 14px 20px;
+    text-decoration: none;
+    color: #555;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-radius: 15px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid transparent;
+}
+
+/* Icon Spacing */
+.category-link .icon {
+    margin-right: 12px;
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+}
+
+/* Hover Effect */
+.category-link:hover {
+    background-color: #f0fdf4;
+    color: #2e7d32;
+    transform: translateX(8px);
+    border-color: #dcfce7;
+}
+
+.category-link:hover .icon {
+    transform: scale(1.2);
+}
+
+/* ACTIVE State Logic */
+.category-link.active {
+    background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+    color: #ffffff !important;
+    box-shadow: 0 8px 20px rgba(46, 125, 50, 0.25);
+    transform: translateX(5px);
+}
+
+.category-link.active .icon {
+    filter: brightness(0) invert(1); /* Makes emoji stand out if needed, or keep as is */
+}
+
+/* Special Styling for 'Go Shopping' */
+.shop-link {
+    margin-top: 20px;
+    background-color: #fff;
+    border: 2px dashed #e0e0e0;
+}
+
+.shop-link:hover {
+    border: 2px solid #2e7d32;
+    background-color: #ffffff;
+}
+
+/* Responsive Touch for Mobile */
+@media (max-width: 768px) {
+    .category-link {
+        padding: 12px 15px;
+        font-size: 0.85rem;
+    }
+}
+</style>
+
+<div class="marketplace-container">
+    <aside class="sidebar">
+        <h4>My Account</h4>
+        <div class="sidebar-nav">
+    <a href="{% url 'customer_dashboard' %}" 
+       class="category-link {% if not request.GET.view %}active{% endif %}">
+        <span class="icon">🏠</span> Dashboard Home
+    </a>
+    
+    <a href="{% url 'customer_dashboard' %}?view=orders" 
+       class="category-link {% if request.GET.view == 'orders' %}active{% endif %}">
+        <span class="icon">📜</span> My Orders
+    </a>
+    
+    <a href="{% url 'accounts' %}" 
+       class="category-link shop-link">
+        <span class="icon">🛒</span> Go Shopping
+    </a>
+</div>
+        
+        <div class="mt-auto pt-4 border-top">
+            <form id="logout-form" action="{% url 'user_logout' %}" method="POST" style="display: none;">
+                {% csrf_token %}
+            </form>
+            <a href="javascript:void(0)" onclick="document.getElementById('logout-form').submit();" style="color: #d32f2f; text-decoration: none; padding: 12px; font-weight: 600; display: block;">🚪 Sign Out</a>
+        </div>
+    </aside>
+
+    <main class="content-area">
+        {% if not request.GET.view %}
+            <div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="order-table-card h-100 text-center py-4 border-start border-warning border-4">
+            <h2 class="text-warning fw-bold">{{ pending_count }}</h2>
+            <p class="text-muted mb-0">Pending Orders</p>
+            <small class="text-muted">Awaiting confirmation</small>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="order-table-card h-100 text-center py-4 border-start border-primary border-4">
+            <h2 class="text-primary fw-bold">{{ processing_count }}</h2>
+            <p class="text-muted mb-0">Processing</p>
+            <small class="text-muted">Farmer is preparing items</small>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="order-table-card h-100 text-center py-4 border-start border-success border-4">
+            <h2 class="text-success fw-bold">{{ completed_count }}</h2>
+            <p class="text-muted mb-0">Completed</p>
+            <small class="text-muted">Successfully delivered</small>
+        </div>
+    </div>
+</div>
+
+        {% elif request.GET.view == 'orders' %}
+            <div class="shop-header">
+                <h2>My Order History</h2>
+                <p class="text-muted">Details of your previous purchases from our verified farmers.</p>
+            </div>
+
+            <div class="order-table-card">
+                <table class="table table-borderless align-middle">
+                    <thead class="text-muted small text-uppercase">
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                <tr class="border-bottom">
+                    <td class="fw-bold text-success">#ORD-{{ order.id }}</td>
+                    <td>{{ order.created_at|date:"d M Y" }}</td>
+                    <td class="fw-bold">₹{{ order.total_price }}</td>
+                    <td>
+                        <span class="status-pill status-{{ order.status|lower }}">
+                            {{ order.status }}
+                        </span>
+                        
+                        {% if not order.is_paid and order.status == 'Pending' %}
+                            <div class="mt-1">
+                                <a href="{% url 'initiate_payment' order.id %}" class="btn btn-sm btn-danger py-0 px-2" style="font-size: 10px;">💳 Pay Now</a>
+                            </div>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center py-5">
+                        <p class="text-muted">No orders found. <a href="{% url 'accounts' %}">Start shopping!</a></p>
+                    </td>
+                </tr>
+                {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}PureBasket | Register{% endblock %}
+
+{% block extra_css %}
+<style>
+    .register-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+        padding: 20px;
+    }
+
+    .register-card {
+        background: white;
+        width: 100%;
+        max-width: 450px;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    .register-card h2 {
+        color: #2e7d32;
+        text-align: center;
+        margin-bottom: 30px;
+        font-weight: 600;
+    }
+
+    /* ALIGNMENT FIX: Targets the paragraphs created by .as_p */
+    form p {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 15px;
+    }
+
+    form label {
+        font-weight: 500;
+        margin-bottom: 5px;
+        color: #444;
+    }
+
+    form input, form select {
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.3s;
+    }
+
+    form input:focus {
+        border-color: #2e7d32;
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 12px;
+        background: #2e7d32;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    .submit-btn:hover {
+        background: #1b5e20;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="register-wrapper">
+    <div class="register-card">
+        <h2>Create Account</h2>
+        
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="form-section">
+                {{ user_form.as_p }}
+                {{ role_form.as_p }}
+            </div>
+
+            <button type="submit" class="submit-btn">Register</button>
+        </form>
+
+        <p style="text-align: center; margin-top: 20px; font-size: 14px;">
+            Already have an account? <a href="{% url 'accounts' %}?openLogin=true" style="color: #2e7d32; font-weight: 600; text-decoration: none;">Login</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

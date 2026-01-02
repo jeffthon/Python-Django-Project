@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+
+{% block title %}Fresh Vegetables | Home{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* 1. GLOBAL & THEME */
+    body { margin: 0; font-family: 'Poppins', sans-serif; background-color: #f6fff6; color: #333; }
+    .section-padding { padding: 60px 30px; }
+    .section-title { text-align: center; color: #2e7d32; margin-bottom: 40px; font-weight: 700; }
+    
+    /* 2. HEADER & NAVIGATION */
+    header {
+        background: #2e7d32; color: white; padding: 15px 30px;
+        display: flex; justify-content: space-between; align-items: center;
+        position: sticky; top: 0; z-index: 1000; box-shadow: 0 3px 7px rgba(0,0,0,0.2);
+    }
+    header h1 { margin: 0; font-size: 24px; letter-spacing: 1px; }
+    nav { display: flex; align-items: center; }
+    nav a { color: white; margin-left: 20px; text-decoration: none; font-weight: 500; transition: 0.3s; }
+    nav a:hover { color: #ffca28; }
+
+    .logout-btn {
+        background: none; border: 1px solid white; color: white;
+        padding: 5px 12px; border-radius: 4px; cursor: pointer; margin-left: 15px;
+    }
+
+    /* 3. HERO & CALL TO ACTIONS */
+    .hero {
+        background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
+                    url('https://images.unsplash.com/photo-1506368083636-6defb67639a7?auto=format&fit=crop&w=1500&q=80') center/cover;
+        height: 500px; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center;
+    }
+    .hero h2 { font-size: 50px; margin-bottom: 10px; text-shadow: 2px 2px 5px rgba(0,0,0,0.7); }
+    
+    .farmer-cta {
+        background: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1600&q=80') center/cover;
+        padding: 100px 20px; text-align: center; color: white;
+    }
+    .cta-overlay { background: rgba(0, 0, 0, 0.65); padding: 50px; border-radius: 15px; backdrop-filter: blur(5px); display: inline-block; max-width: 800px; }
+
+    /* 4. BUTTONS & BADGES */
+    .btn-main { display: inline-block; padding: 12px 30px; background: #ffca28; color: #2e7d32; text-decoration: none; border-radius: 6px; font-weight: bold; transition: 0.3s; border: none; }
+    .btn-main:hover { transform: scale(1.05); background: #fbc02d; }
+    .btn-primary { background: #2e7d32; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; display: inline-block; transition: 0.3s; }
+    .badge { background: #ffca28; color: #2e7d32; padding: 5px 15px; border-radius: 50px; font-weight: bold; text-transform: uppercase; font-size: 12px; }
+
+    /* 5. GRID & CARDS */
+    .grid-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 25px; max-width: 1200px; margin: 0 auto; }
+    .card { background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: 0.3s; overflow: hidden; }
+    .card:hover { transform: translateY(-10px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+    
+    .cat-box { width: 180px; padding: 25px; text-align: center; }
+    .product-card { width: 260px; padding-bottom: 20px; text-align: center; }
+    .blog-card { width: 360px; text-align: left; }
+
+    /* 6. POPUP */
+    .popup-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8);
+        display: flex; align-items: center; justify-content: center; visibility: hidden; opacity: 0; transition: 0.3s; z-index: 9999;
+    }
+    .popup-box { background: #fff; padding: 40px; border-radius: 15px; text-align: center; width: 380px; position: relative; }
+    .input-field { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+    /* 1. The container that allows scrolling */
+.featured-scroll-container {
+        display: flex;
+        flex-wrap: nowrap;     /* Prevents items from moving to the next row */
+        overflow-x: auto;      /* Enables horizontal scrolling */
+        overflow-y: hidden;
+        gap: 16px;             /* Space between cards */
+        padding: 10px 5px 20px 5px;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch; /* Smooth scroll for mobile */
+    }
+
+    /* 2. Hide scrollbar for a cleaner look (optional) */
+    .featured-scroll-container::-webkit-scrollbar {
+        height: 6px;
+    }
+    .featured-scroll-container::-webkit-scrollbar-thumb {
+        background: #2e7d32;
+        border-radius: 10px;
+    }
+
+    /* 3. The Card: Fix width so they don't squash */
+    .horizontal-product-card {
+        flex: 0 0 190px;       /* Crucial: Don't grow, don't shrink, stay 190px wide */
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #f0f0f0;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        transition: transform 0.2s;
+    }
+
+    .horizontal-product-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .img-wrapper {
+        height: 130px;
+        overflow: hidden;
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+    }
+
+    .img-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .price-text {
+        color: #2e7d32;
+        font-weight: 700;
+        font-size: 0.85rem;
+    }
+
+    .btn-cart-sm {
+        display: block;
+        background: #2e7d32;
+        color: white;
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 6px;
+        border-radius: 8px;
+        transition: 0.2s;
+    }
+
+    .btn-cart-sm:hover {
+        background: #1b5e20;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <header>
+        <h1>PureBasket</h1>
+        <nav>
+            <a href="{% url 'accounts' %}">Home</a>
+            <a href="{% url 'product_list' %}">Shop</a>
+            
+            {% if user.is_authenticated %}
+                {% if user.is_superuser %}
+                    <a href="{% url 'admin_page' %}">Admin Panel</a>
+                {% elif user.userrole.role == 'farmer' %}
+                    <a href="{% url 'personal_data_dashboard' %}">Farmer Dashboard</a>
+                {% else %}
+                    <a href="{% url 'customer_dashboard' %}">My Account</a>
+                {% endif %}
+
+                <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-btn">Logout</button>
+                </form>
+            {% else %}
+                <a href="javascript:void(0)" onclick="openLoginPopup()">Login</a>
+                <a href="{% url 'register' %}?role=farmer" style="background:#ffca28; color:#2e7d32; padding:5px 15px; border-radius:4px; font-weight: 600;">Join Us</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h2>Fresh & Organic Vegetables</h2>
+        <p style="font-size: 1.2rem; margin-bottom: 25px;">Directly from local farms to your kitchen.</p>
+        <a href="{% url 'product_list' %}" class="btn-main">Start Shopping</a>
+    </section>
+
+    
+    <section class="py-4">
+    <div class="container">
+        <h2 class="fw-bold mb-4">⭐ Featured Harvests</h2>
+        
+        <div class="featured-scroll-container">
+            {% for product in featured_products %}
+                <div class="horizontal-product-card">
+                    <div class="img-wrapper">
+                        <img src="{% if product.image %}{{ product.image.url }}{% else %}https://via.placeholder.com/200{% endif %}" alt="{{ product.name }}">
+                    </div>
+                    <div class="p-2 text-center">
+                        <h6 class="fw-bold text-truncate mb-1" title="{{ product.name }}">{{ product.name }}</h6>
+                        <p class="price-text mb-2">₹{{ product.price }} / {{ product.weight_or_qty }}</p>
+                        <a href="{% url 'add_to_cart' product.id %}" class="btn-cart-sm">Add to Cart</a>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-muted text-center w-100">No featured items yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+    <section class="farmer-cta">
+        <div class="cta-overlay">
+            <span class="badge">For Our Farmers</span>
+            <h2 style="font-size: 32px; margin: 15px 0;">Sell Your Harvest Directly</h2>
+            <p style="margin-bottom: 25px;">Skip the middleman. Set your own prices and reach thousands of customers instantly.</p>
+            <a href="{% url 'register' %}?role=farmer" class="btn-main">Register as Farmer</a>
+        </div>
+    </section>
+
+    {% for product in my_products %}
+<tr>
+    <td>{{ product.name }}</td>
+    <td>
+        {% if product.is_verified %}
+            <span class="badge bg-success">Verified</span>
+        {% else %}
+            <span class="badge bg-warning text-dark">Awaiting Approval</span>
+        {% endif %}
+    </td>
+    <td>₹{{ product.price }}</td>
+</tr>
+{% endfor %}
+
+    <footer>
+        <p>&copy; 2025 PureBasket | Fresh Vegetables Delivered</p>
+    </footer>
+
+    <div id="loginPopup" class="popup-overlay">
+        <div class="popup-box">
+            <h2 style="color:#2e7d32; margin-top:0;">User Login</h2>
+            <p style="font-size:0.9rem; color:#666; margin-bottom:20px;">Welcome back to PureBasket</p>
+            <form method="POST" action="{% url 'user_login' %}">
+                {% csrf_token %}
+                <input type="text" name="username" placeholder="Username" class="input-field" required>
+                <input type="password" name="password" placeholder="Password" class="input-field" required>
+                <button type="submit" class="btn-primary" style="width:100%; border:none; cursor:pointer; margin-top:15px; font-weight:600;">Login Now</button>
+            </form>
+            <button onclick="closeLoginPopup()" style="background:none; border:none; color:#d32f2f; margin-top:15px; cursor:pointer; font-size:0.9rem;">Close</button>
+        </div>
+    </div>
+
+    <script>
+        function openLoginPopup() {
+            const popup = document.getElementById("loginPopup");
+            popup.style.visibility = "visible";
+            popup.style.opacity = "1";
+        }
+        function closeLoginPopup() {
+            const popup = document.getElementById("loginPopup");
+            popup.style.opacity = "0";
+            setTimeout(() => { popup.style.visibility = "hidden"; }, 300);
+        }
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('openLogin') === 'true') { openLoginPopup(); }
+        }
+    </script>
+{% endblock %}

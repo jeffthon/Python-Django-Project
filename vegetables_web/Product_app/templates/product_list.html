@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* 1. Header & Branding */
+    .store-header {
+        background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
+        padding: 60px 0 90px 0;
+        color: white;
+        text-align: center;
+    }
+
+    /* 2. Sticky Navigation Bar */
+    .sticky-nav-wrapper {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: white;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        padding: 12px 0;
+        margin-top: -45px;
+        border-radius: 15px;
+    }
+
+    .filter-btn {
+        padding: 8px 18px;
+        border-radius: 30px;
+        text-decoration: none;
+        color: #444;
+        font-weight: 600;
+        transition: 0.3s;
+        border: 1px solid #eee;
+        margin-right: 8px;
+    }
+
+    .filter-btn:hover {
+        background: #e8f5e9;
+        color: #2e7d32;
+        border-color: #2e7d32;
+    }
+
+    /* 3. Section Headers */
+    .section-title {
+        border-left: 5px solid #2e7d32;
+        padding-left: 15px;
+        margin: 50px 0 30px 0;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* 4. Product Card Styling */
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 30px;
+    }
+
+   .product-card
+    {
+    background: white;
+    border-radius: 12px; /* Slightly smaller radius */
+    overflow: hidden;
+    border: 1px solid #f0f0f0;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    width: 220px;       
+    margin: 10px;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+}
+
+.img-wrapper {
+    height: 150px;      
+    overflow: hidden;
+}
+
+.img-wrapper img {
+    width: 100%;        
+    height: 100%;       
+    object-fit: cover;
+}
+
+
+.p-3-custom {
+    padding: 12px !important; 
+}
+
+.fw-bold.mb-1 {
+    font-size: 0.95rem;  
+}
+
+.price-tag {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #2e7d32;
+}
+    .action-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-circle {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+    .btn-minus {
+        background: #f8f9fa;
+        color: #dc3545;
+        border: 1px solid #dee2e6;
+    }
+
+    .btn-plus {
+        background: #2e7d32;
+        color: white;
+        border: none;
+    }
+
+    .btn-minus:hover { background: #fee2e2; }
+    .btn-plus:hover { background: #1b5e20; transform: scale(1.1); }
+
+    html { scroll-behavior: smooth; }
+</style>
+
+<section class="store-header">
+    <div class="container">
+        <h1 class="display-4 fw-bold">PureBasket Marketplace</h1>
+        <p class="lead opacity-75">Farm-fresh produce delivered straight to your kitchen.</p>
+    </div>
+</section>
+
+<div class="container">
+    <div class="sticky-nav-wrapper px-4 d-flex justify-content-between align-items-center">
+        <div class="d-none d-lg-block">
+            <a href="#vegetables" class="filter-btn">🥦 Vegetables</a>
+            <a href="#fruits" class="filter-btn">🍎 Fruits</a>
+            <a href="#grains" class="filter-btn">🌾 Grains</a>
+        </div>
+        
+        <div class="ms-auto d-flex gap-2">
+            <a href="{% url 'accounts' %}" class="btn btn-outline-success rounded-pill px-4 fw-bold">Home</a>
+            <a href="{% url 'cart_summary' %}" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm d-flex align-items-center">
+                Go To Cart 🛒 
+                
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    
+    <section id="vegetables">
+        <h3 class="section-title text-success">Fresh Vegetables</h3>
+        <div class="product-grid">
+            {% for product in vegetables %}
+                <div class="product-card">
+                    <div class="img-wrapper">
+                        <img src="{% if product.image %}{{ product.image.url }}{% else %}https://via.placeholder.com/300{% endif %}" alt="{{ product.name }}">
+                    </div>
+                    <div class="p-4">
+                        <h5 class="fw-bold mb-1">{{ product.name }}</h5>
+                        <p class="text-muted small mb-3">👨‍🌾 Farmer: {{ product.farmer.username }}</p>
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                            <div>
+                                <span class="price-tag">₹{{ product.price }}</span>
+                                <small class="text-muted">/kg</small>
+                            </div>
+                            <div class="action-controls">
+                                <a href="{% url 'decrease_cart_item' product.id %}" class="btn-circle btn-minus" title="Remove one">-</a>
+                                <a href="{% url 'add_to_cart' product.id %}" class="btn-circle btn-plus" title="Add to basket">+</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12 py-4 text-center text-muted">No vegetables available right now.</div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section id="fruits">
+        <h3 class="section-title text-warning" style="border-color: #ffc107;">Seasonal Fruits</h3>
+        <div class="product-grid">
+            {% for product in fruits %}
+                <div class="product-card">
+                    <div class="img-wrapper">
+                        <img src="{% if product.image %}{{ product.image.url }}{% else %}https://via.placeholder.com/300{% endif %}" alt="{{ product.name }}">
+                    </div>
+                    <div class="p-4">
+                        <h5 class="fw-bold mb-1">{{ product.name }}</h5>
+                        <p class="text-muted small mb-3">👨‍🌾 Farmer: {{ product.farmer.username }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="price-tag">₹{{ product.price }}</span>
+                                <small class="text-muted">/kg</small>
+                            </div>
+                            <div class="action-controls">
+                                <a href="{% url 'decrease_cart_item' product.id %}" class="btn-circle btn-minus">-</a>
+                                <a href="{% url 'add_to_cart' product.id %}" class="btn-circle btn-plus">+</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12 py-4 text-center text-muted">No fruits in stock.</div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section id="grains">
+        <h3 class="section-title" style="border-color: #795548; color: #795548;">Organic Grains</h3>
+        <div class="product-grid">
+            {% for product in grains %}
+                <div class="product-card">
+                    <div class="img-wrapper">
+                        <img src="{% if product.image %}{{ product.image.url }}{% else %}https://via.placeholder.com/300{% endif %}" alt="{{ product.name }}">
+                    </div>
+                    <div class="p-4">
+                        <h5 class="fw-bold mb-1">{{ product.name }}</h5>
+                        <p class="text-muted small mb-3">👨‍🌾 Farmer: {{ product.farmer.username }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="price-tag">₹{{ product.price }}</span>
+                                <small class="text-muted">/kg</small>
+                            </div>
+                            <div class="action-controls">
+                                <a href="{% url 'decrease_cart_item' product.id %}" class="btn-circle btn-minus">-</a>
+                                <a href="{% url 'add_to_cart' product.id %}" class="btn-circle btn-plus">+</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12 py-4 text-center text-muted">No grains found.</div>
+            {% endfor %}
+        </div>
+    </section>
+
+</div>
+{% endblock %}

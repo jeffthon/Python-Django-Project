@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .form-container {
+        max-width: 700px;
+        margin: 50px auto;
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .form-header h2 {
+        color: #2e7d32;
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        color: #444;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    /* Styling Django's form fields */
+    .form-control, .form-select {
+        border-radius: 12px;
+        border: 2px solid #f0f0f0;
+        padding: 12px 15px;
+        transition: 0.3s;
+    }
+
+    .form-control:focus {
+        border-color: #2e7d32;
+        box-shadow: 0 0 0 0.25rem rgba(46, 125, 50, 0.1);
+    }
+
+    .submit-btn {
+        background: #2e7d32;
+        color: white;
+        border: none;
+        width: 100%;
+        padding: 15px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin-top: 20px;
+        transition: 0.3s;
+    }
+
+    .submit-btn:hover {
+        background: #1b5e20;
+        transform: translateY(-2px);
+    }
+
+    .info-card {
+        background: #e8f5e9;
+        border-left: 5px solid #2e7d32;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+        font-size: 0.9rem;
+        color: #1b5e20;
+    }
+</style>
+
+<div class="container">
+    <div class="form-container">
+        <div class="form-header">
+            <h2>🌱 List New Harvest</h2>
+            <p class="text-muted">Fill in the details to list your fresh produce on the marketplace.</p>
+        </div>
+
+        <div class="info-card">
+            <strong>Note:</strong> Your product will be visible to customers once the administrator verifies the quality and price.
+        </div>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="row">
+                <div class="col-md-12 form-group">
+                    <label>Product Name</label>
+                    {{ form.name }}
+                </div>
+
+                <div class="col-md-6 form-group">
+                    <label>Category</label>
+                    {{ form.category }}
+                </div>
+
+                <div class="col-md-6 form-group">
+                    <label>Price (per kg)</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light">₹</span>
+                        {{ form.price }}
+                    </div>
+                </div>
+
+                <div class="col-md-6 form-group">
+                    <label>Available Stock (kg)</label>
+                    {{ form.stock }}
+                </div>
+
+                <div class="col-md-12 form-group">
+                    <label>Upload Product Photo</label>
+                    {{ form.image }}
+                    <small class="text-muted">Clear photos of the actual harvest help sell faster!</small>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">
+                Submit for Verification
+            </button>
+            
+            <a href="{% url 'farmer_dashboard' %}" class="btn btn-link w-100 mt-2 text-decoration-none text-muted">
+                Cancel and Go Back
+            </a>
+        </form>
+    </div>
+</div>
+{% endblock %}

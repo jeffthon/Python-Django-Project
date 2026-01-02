@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}Create Farmer Profile{% endblock %}
+
+{% block content %}
+<div style="background-color: #f6fff6; min-height: 100vh; padding: 50px 20px;">
+    <div style="max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+        
+        <h2 style="color: #2e7d32; text-align: center; margin-bottom: 10px;">Farmer Registration</h2>
+        <p style="text-align: center; color: #666; margin-bottom: 30px;">Please provide your details to start selling on PureBasket.</p>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <style>
+                p { margin-bottom: 15px; }
+                input, textarea, select {
+                    width: 100%;
+                    padding: 10px;
+                    border: 1px solid #ddd;
+                    border-radius: 6px;
+                    box-sizing: border-box;
+                    margin-top: 5px;
+                }
+                label { font-weight: 600; color: #444; }
+            </style>
+
+            {{ form.as_p }}
+
+            <div style="text-align: center; margin: 20px 0;">
+                <p style="font-size: 14px; color: #888;">Profile Photo Preview:</p>
+                <img id="preview" width="120" height="120" 
+                     style="border-radius: 50%; object-fit: cover; border: 2px solid #2e7d32; background: #eee;">
+            </div>
+
+            <button type="submit" style="width: 100%; background: #2e7d32; color: white; border: none; padding: 15px; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s;">
+                Save Profile & Continue
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Improved JS to handle the preview safely
+    const photoInput = document.querySelector('input[type="file"]');
+    if (photoInput) {
+        photoInput.onchange = function (event) {
+            let reader = new FileReader();
+            reader.onload = function () {
+                const preview = document.getElementById("preview");
+                preview.src = reader.result;
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        };
+    }
+</script>
+{% endblock %}

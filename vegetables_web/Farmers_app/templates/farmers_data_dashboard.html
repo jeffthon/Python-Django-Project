@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form id="logout-form" action="{% url 'user_logout' %}" method="POST" style="display: none;">
+    {% csrf_token %}
+</form>
+
+<div style="display: flex; min-height: 100vh; background-color: #f8faf9; font-family: 'Inter', sans-serif;">
+    
+    <aside style="width: 280px; background: #1b5e20; color: white; padding: 30px 20px; position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; box-shadow: 4px 0 10px rgba(0,0,0,0.1);">
+        <h2 style="font-size: 24px; margin-bottom: 40px; color: #fff; display: flex; align-items: center; gap: 12px; letter-spacing: -0.5px;">
+            <span style="background: white; border-radius: 8px; padding: 5px;">🧺</span> PureBasket
+        </h2>
+        
+        <nav style="display: flex; flex-direction: column; gap: 8px; flex-grow: 1;">
+            <a href="{% url 'personal_data_dashboard' %}" style="background: rgba(255,255,255,0.2); color: white; text-decoration: none; padding: 14px 18px; border-radius: 12px; font-weight: 600; display: flex; align-items: center; gap: 12px;">
+                <span>📊</span> Dashboard Overview
+            </a>
+            <a href="{% url 'add_product' %}" style="color: rgba(255,255,255,0.8); text-decoration: none; padding: 14px 18px; border-radius: 12px; transition: 0.3s; display: flex; align-items: center; gap: 12px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">
+                <span>🥦</span> Add New Harvest
+            </a>
+            <a href="#" style="color: rgba(255,255,255,0.8); text-decoration: none; padding: 14px 18px; border-radius: 12px; transition: 0.3s; display: flex; align-items: center; gap: 12px;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">
+                <span>📦</span> Active Orders
+            </a>
+        </nav>
+
+        <button onclick="document.getElementById('logout-form').submit();" style="background: rgba(255, 77, 77, 0.15); color: #ff9999; border: 1px solid rgba(255, 77, 77, 0.3); padding: 12px; border-radius: 10px; cursor: pointer; font-weight: 600; transition: 0.3s;" onmouseover="this.style.background='rgba(255, 77, 77, 0.3)'" onmouseout="this.style.background='rgba(255, 77, 77, 0.15)'">
+            Log Out
+        </button>
+    </aside>
+
+    <main style="flex: 1; padding: 40px; max-width: 1200px; margin: 0 auto;">
+
+        {% if messages %}
+            {% for message in messages %}
+                <div style="padding: 16px 20px; margin-bottom: 30px; border-radius: 12px; background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; font-weight: 600; display: flex; align-items: center; gap: 12px; animation: slideIn 0.5s ease;">
+                    <span style="font-size: 20px;">✅</span> {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+            <div>
+                <h1 style="color: #1b5e20; margin: 0; font-size: 34px; font-weight: 800; letter-spacing: -1px;">Farmer Portal</h1>
+                <p style="color: #666; margin-top: 8px; font-size: 16px;">Welcome back, <b>{{ request.user.username }}</b></p>
+            </div>
+            {% if personal %}
+            <a href="{% url 'add_product' %}" style="background: #2e7d32; color: white; padding: 14px 30px; border-radius: 12px; text-decoration: none; font-weight: bold; box-shadow: 0 10px 20px rgba(46, 125, 50, 0.2); transition: 0.3s; display: inline-flex; align-items: center; gap: 10px;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 15px 25px rgba(46, 125, 50, 0.3)'" onmouseout="this.style.transform='translateY(0)'">
+                <span>+</span> Add New Harvest
+            </a>
+            {% endif %}
+        </header>
+
+        {% if personal %}
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-bottom: 45px;">
+                <div style="background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); display: flex; flex-direction: column; gap: 10px;">
+                    <span style="color: #888; text-transform: uppercase; font-weight: 700; font-size: 12px; letter-spacing: 1px;">Total Inventory</span>
+                    <span style="color: #1b5e20; font-size: 38px; font-weight: 800;">{{ my_products.count }}</span>
+                </div>
+                <div style="background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); display: flex; flex-direction: column; gap: 10px;">
+                    <span style="color: #888; text-transform: uppercase; font-weight: 700; font-size: 12px; letter-spacing: 1px;">Live Items</span>
+                    <span style="color: #ff9800; font-size: 38px; font-weight: 800;">{{ my_products_verified.count }}</span>
+                </div>
+                <div style="background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); display: flex; flex-direction: column; gap: 10px;">
+                    <span style="color: #888; text-transform: uppercase; font-weight: 700; font-size: 12px; letter-spacing: 1px;">Location</span>
+                    <span style="color: #333; font-size: 24px; font-weight: 700; margin-top: 10px;">📍 {{ personal.District }}</span>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 340px; gap: 35px; align-items: start;">
+                
+                <div style="background: white; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); border: 1px solid #f0f0f0; overflow: hidden;">
+                    <div style="padding: 25px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; background: #fafcfb;">
+                        <h3 style="margin: 0; color: #1b5e20; font-size: 20px; font-weight: 700;">Active Listings</h3>
+                        <span style="font-size: 12px; font-weight: 700; color: #2e7d32; background: #e8f5e9; padding: 6px 14px; border-radius: 30px;">MANAGE STOCK</span>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="text-align: left; background: #fff; border-bottom: 2px solid #f4f7f6;">
+                                    <th style="padding: 20px; font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 1px;">Product Details</th>
+                                    <th style="padding: 20px; font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 1px;">Price</th>
+                                    <th style="padding: 20px; font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 1px;">Status</th>
+                                    <th style="padding: 20px; font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 1px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in my_products %}
+                                <tr style="border-bottom: 1px solid #f8faf9; transition: 0.2s;" onmouseover="this.style.backgroundColor='#f9fbf9'" onmouseout="this.style.backgroundColor='transparent'">
+                                    <td style="padding: 18px 20px;">
+                                        <div style="display: flex; align-items: center; gap: 15px;">
+                                            <div style="width: 55px; height: 55px; border-radius: 14px; overflow: hidden; border: 1px solid #eee;">
+                                                {% if product.image %}
+                                                    <img src="{{ product.image.url }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                                {% else %}
+                                                    <div style="width: 100%; height: 100%; background: #f0f4f0; display: flex; align-items: center; justify-content: center; font-size: 24px;">🥦</div>
+                                                {% endif %}
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 700; color: #333; font-size: 16px; margin-bottom: 3px;">{{ product.name }}</div>
+                                                <small style="color: #888; font-weight: 500;">{{ product.stock }} {{ product.weight_or_qty }} Left</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td style="padding: 20px; font-weight: 800; color: #1b5e20; font-size: 17px;">₹{{ product.price }}</td>
+                                    <td style="padding: 20px;">
+                                        {% if product.is_verified %}
+                                            <span style="background: #e8f5e9; color: #2e7d32; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; display: inline-flex; align-items: center; gap: 5px;">
+                                                <span style="width: 6px; height: 6px; background: #2e7d32; border-radius: 50%;"></span> LIVE
+                                            </span>
+                                        {% else %}
+                                            <span style="background: #fff3e0; color: #e65100; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 800;">⏳ REVIEWING</span>
+                                        {% endif %}
+                                    </td>
+                                    <td style="padding: 20px;">
+                                        <div style="display: flex; gap: 8px;">
+                                            <a href="{% url 'edit_product' product.id %}" style="text-decoration: none; padding: 8px 12px; border-radius: 8px; border: 1px solid #ddd; background: white; color: #555; font-size: 12px; font-weight: 700; transition: 0.2s;" onmouseover="this.style.borderColor='#1b5e20'; this.style.color='#1b5e20'">Edit</a>
+                                            <form action="{% url 'delete_product' product.id %}" method="POST" onsubmit="return confirm('Delete this harvest forever?');">
+                                                {% csrf_token %}
+                                                <button type="submit" style="border: none; background: #ffebee; color: #c62828; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer;">Delete</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" style="padding: 80px 20px; text-align: center;">
+                                        <div style="font-size: 50px; margin-bottom: 15px;">🚜</div>
+                                        <h4 style="color: #333; margin: 0;">No harvest listed yet</h4>
+                                        <p style="color: #999; margin-top: 10px;">Start your journey by adding your first fresh produce.</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div style="background: white; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); overflow: hidden; position: sticky; top: 40px; border: 1px solid #f0f0f0;">
+                    <div style="background: linear-gradient(to bottom right, #1b5e20, #388e3c); padding: 45px 30px; text-align: center;">
+                        <div style="position: relative; display: inline-block;">
+                            {% if personal.Profile_photo %}
+                                <img src="{{ personal.Profile_photo.url }}" style="width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 4px solid rgba(255,255,255,0.25); box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
+                            {% else %}
+                                <div style="width: 110px; height: 110px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; margin: 0 auto; color: white; font-size: 45px;">🌾</div>
+                            {% endif %}
+                            <div style="position: absolute; bottom: 5px; right: 5px; background: #ffca28; width: 24px; height: 24px; border-radius: 50%; border: 3px solid #1b5e20; display: flex; align-items: center; justify-content: center; font-size: 12px;">✔️</div>
+                        </div>
+                        <h3 style="margin: 20px 0 5px 0; font-size: 22px; color: white; font-weight: 800;">{{ personal.name }}</h3>
+                        <span style="color: #a5d6a7; font-weight: 600; font-size: 14px;">Master Farmer</span>
+                    </div>
+                    <div style="padding: 30px;">
+                        <div style="display: flex; flex-direction: column; gap: 18px;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: #888; font-size: 14px;">Primary Crop</span>
+                                <span style="color: #333; font-weight: 700; font-size: 14px;">{{ personal.VegetableName }}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: #888; font-size: 14px;">Contact</span>
+                                <span style="color: #333; font-weight: 700; font-size: 14px;">{{ personal.Phone }}</span>
+                            </div>
+                        </div>
+                        <hr style="border: 0; border-top: 1px solid #f0f0f0; margin: 25px 0;">
+                        <a href="{% url 'edit_personal_data' %}" style="display: block; text-align: center; background: #f4fcf7; color: #1b5e20; padding: 14px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 14px; transition: 0.3s; border: 1px solid #e1f2e8;" onmouseover="this.style.background='#e8f5e9'" onmouseout="this.style.background='#f4fcf7'">Edit Profile Details</a>
+                    </div>
+                </div>
+
+            </div>
+
+        {% else %}
+            <div style="background: white; padding: 80px 40px; border-radius: 32px; text-align: center; border: 2px dashed #c8e6c9; margin-top: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.02);">
+                <div style="font-size: 90px; margin-bottom: 25px;">🌱</div>
+                <h2 style="color: #1b5e20; font-size: 32px; font-weight: 800; letter-spacing: -1px;">Ready to Start Selling?</h2>
+                <p style="color: #777; font-size: 19px; max-width: 520px; margin: 0 auto 40px; line-height: 1.6;">You're just one step away. Please complete your professional farmer profile to gain access to the marketplace.</p>
+                <a href="{% url 'personal_data' %}" style="background: #2e7d32; color: white; padding: 20px 50px; border-radius: 16px; text-decoration: none; font-weight: 800; font-size: 18px; display: inline-block; box-shadow: 0 10px 25px rgba(46, 125, 50, 0.25); transition: 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Complete My Profile</a>
+            </div>
+        {% endif %}
+
+    </main>
+</div>
+
+<style>
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+{% endblock %}

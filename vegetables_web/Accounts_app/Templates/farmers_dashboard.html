@@ -1,0 +1,31 @@
+<h3>My Vegetables</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in my_products %}
+        <tr>
+            <td><img src="{{ product.image.url }}" width="50"></td>
+            <td>{{ product.name }}</td>
+            <td>${{ product.price }}</td>
+            <td>
+                {% if product.is_verified %}
+                    <span class="badge bg-success">Verified (Live in Shop)</span>
+                {% else %}
+                    <span class="badge bg-warning text-dark">Pending Admin Approval</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">No products added yet. <a href="{% url 'add_product' %}">Add one now!</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

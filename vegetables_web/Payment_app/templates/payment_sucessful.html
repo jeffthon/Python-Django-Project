@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5 mt-5 text-center">
+    <div class="card shadow border-0 rounded-4 p-5 mx-auto" style="max-width: 600px;">
+        <div class="mb-4">
+            <span style="font-size: 80px;">🎉</span>
+        </div>
+        <h1 class="fw-bold text-success mb-3">Payment Successful!</h1>
+        <p class="text-muted mb-4">Thank you for your purchase. Your order <strong>#{{ order.id }}</strong> has been placed successfully and the farmer has been notified.</p>
+        
+        <div class="bg-light p-3 rounded-3 mb-4">
+            <div class="d-flex justify-content-between mb-2">
+                <span>Amount Paid:</span>
+                <span class="fw-bold text-dark">₹{{ order.total_price }}</span>
+            </div>
+            <div class="d-flex justify-content-between">
+                <span>Status:</span>
+                <span class="badge bg-success rounded-pill">Confirmed</span>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2">
+            <a href="{% url 'order_history' %}" class="btn btn-success btn-lg rounded-pill fw-bold">
+                View My Orders
+            </a>
+            <a href="{% url 'product_list' %}" class="btn btn-link text-muted">
+                Continue Shopping
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
