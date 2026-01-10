@@ -34,9 +34,25 @@
             document.getElementById('razorpay_signature').value = response.razorpay_signature;
             document.querySelector('form').submit();
         },
+        "modal":{
+            "ondismiss":function(){
+                if(confirm("payment cancelled. Do you want to try again")){
+                    window.location.reload()
+                }else{
+
+                window.location.href="{url 'order_summary' order.id}"
+            }}
+        },
+
         "theme": { "color": "#2e7d32" }
     };
     var rzp1 = new Razorpay(options);
+    rzp1.on('payment.failed',function(response){
+        alert("payment failed: "+response.error.description);
+        
+        
+    });
+
     document.getElementById('rzp-button1').onclick = function(e){
         rzp1.open();
         e.preventDefault();

@@ -4,7 +4,9 @@ import razorpay
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from Orders_app.models import Order
-
+from django.urls import reverse
+from razorpay.errors import SignatureVerificationError
+from django.db import transaction
 
 client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
 
@@ -22,17 +24,17 @@ def initiate_payment(request, order_id):
     }
     razorpay_order = client.order.create(data=data)
     
-    
+    callback_url = request.build_absolute_uri(reverse('verify_payment', args=[order.id]))
     context = {
         'order': order,
         'razorpay_order_id': razorpay_order['id'],
         'razorpay_merchant_key': settings.RAZORPAY_KEY_ID,
         'amount': amount,
-        'callback_url':f"http://127.0.0.1:8000/payment/verify-payment/{order.id}/"
+        'callback_url':callback_url
     }
     return render(request, 'payment.html', context)
 
-@csrf_exempt
+
 def verify_payment(request, order_id):
     if request.method == "POST":
         
@@ -49,10 +51,17 @@ def verify_payment(request, order_id):
         try:
             
             client.utility.verify_payment_signature(params_dict)
-            order = Order.objects.get(id=order_id)
-            order.is_paid = True
-            order.status = 'Processing'
-            order.save()
+            with transaction.atomic():
+                order = Order.objects.select_for_update().get(id=order_id)
+                if not order.is_paid:
+                    order.is_paid = True
+                    order.status = 'Processing'
+                    order.save()
             return render(request, 'payment_success.html',{'order':order})
-        except:
-            return render(request, 'payment_failed.html')
+        except SignatureVerificationError:
+            return render(request,'payment_failed.html',{'reason':"Signature Verification failed"})
+        except Exception as e:
+            return render(request,'payment_failed.html',{'reason':str(e)})
+    return redirect('initiate_payment',order_id=order_id)
+
+            

@@ -2,108 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Document{% endblock %}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    {% block extra_css %}
-
-    {% endblock %}
+    <title>{% block title %}PureBasket{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
     {% block content %}
-
-<div class="container mt-4">
-    <h2 class="mb-4">Admin Control Panel</h2>
-
-    <div class="row mb-5">
-        <div class="col-md-4">
-            <div class="card bg-primary text-white shadow">
-                <div class="card-body">
-                    <h5>Total Farmers</h5>
-                    <h3>{{ total_farmers }}</h3>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card bg-info text-white shadow">
-                <div class="card-body">
-                    <h5>Total Customers</h5>
-                    <h3>{{ total_customers }}</h3>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <hr>
-
-    <h3 class="mt-4">Pending Farmer Approvals</h3>
-    <div class="table-responsive">
-        <table class="table table-hover border">
-            <thead class="table-dark">
-                <tr>
-                    <th>Username</th>
-                    <th>Role</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for role in pending_farmers %}
-                <tr>
-                    <td>{{ role.user.username }}</td>
-                    <td><span class="badge bg-secondary">{{ role.role }}</span></td>
-                    <td>
-                        <form action="{% url 'approve_farmer' role.id %}" method="POST">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-success btn-sm">Approve Farmer</button>
-                        </form>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="3" class="text-center">No farmers waiting for approval.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <h3 class="mt-5">Vegetables Pending Verification</h3>
-    <div class="table-responsive">
-        <table class="table table-hover border">
-            <thead class="table-dark">
-                <tr>
-                    <th>Image</th>
-                    <th>Vegetable Name</th>
-                    <th>Farmer</th>
-                    <th>Price</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for product in unverified_products %}
-                <tr>
-                    <td><img src="{{ product.image.url }}" style="width: 50px; height: 50px; object-fit: cover;" class="rounded border"></td>
-                    <td>{{ product.name }}</td>
-                    <td>{{ product.farmer.username }}</td>
-                    <td>${{ product.price }}</td>
-                    <td>
-                        <form action="{% url 'approve_product' product.id %}" method="POST">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-warning btn-sm">Verify & Publish</button>
-                        </form>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5" class="text-center">No vegetables pending verification.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-
-    
     {% endblock %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
